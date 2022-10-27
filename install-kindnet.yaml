@@ -41,7 +41,7 @@ metadata:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kindnet
+  name: kindnet-arm64
   namespace: kube-system
   labels:
     tier: node
@@ -135,7 +135,7 @@ spec:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kindnet
+  name: kindnet-amd64
   namespace: kube-system
   labels:
     tier: node

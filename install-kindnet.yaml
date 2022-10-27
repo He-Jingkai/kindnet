@@ -58,6 +58,113 @@ spec:
         app: kindnet
         k8s-app: kindnet
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: beta.kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64
+      hostNetwork: true
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+      serviceAccountName: kindnet
+      initContainers:
+      - name: install-cni-bin
+        image: aojea/kindnetd:v1.0.1
+        command: ['sh', '-c', 'cp -f /opt/cni/bin/* /cni/ ']
+        volumeMounts:
+        - name: cni-bin
+          mountPath: /cni
+      containers:
+      - name: kindnet-cni
+        image: aojea/kindnetd:v1.0.1
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: cni-cfg
+          mountPath: /etc/cni/net.d
+        - name: xtables-lock
+          mountPath: /run/xtables.lock
+          readOnly: false
+        - name: lib-modules
+          mountPath: /lib/modules
+          readOnly: true
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "100m"
+            memory: "50Mi"
+        securityContext:
+          privileged: false
+          capabilities:
+            add: ["NET_RAW", "NET_ADMIN"]
+      volumes:
+      - name: cni-bin
+        hostPath:
+          path: /opt/cni/bin
+          type: DirectoryOrCreate
+      - name: cni-cfg
+        hostPath:
+          path: /etc/cni/net.d
+          type: DirectoryOrCreate
+      - name: xtables-lock
+        hostPath:
+          path: /run/xtables.lock
+          type: FileOrCreate
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kindnet
+  namespace: kube-system
+  labels:
+    tier: node
+    app: kindnet
+    k8s-app: kindnet
+spec:
+  selector:
+    matchLabels:
+      app: kindnet
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: kindnet
+        k8s-app: kindnet
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: beta.kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
       hostNetwork: true
       tolerations:
       - operator: Exists

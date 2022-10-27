@@ -22,16 +22,25 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "${REPO_ROOT}"
 
 # build the binary
-export GOARCH="${GOARCH:-amd64}"
-export GOOS="linux"
 export SOURCE_DIR="${REPO_ROOT}"
 
 # TODO: verisoning
 # build image
-IMAGE="${IMAGE:-aojea/kindnetd}"
-TAG="${TAG:-$(cat VERSION)}"
+IMAGE="hejingkai/kindnetd"
+TAG="arm64"
 docker build \
   -t "${IMAGE}:${TAG}" \
-  --build-arg="GOARCH=${GOARCH}" \
+  --build-arg="GOARCH=arm64" \
   -f Dockerfile \
   "${SOURCE_DIR}"
+
+IMAGE="hejingkai/kindnetd"
+TAG="amd64"
+docker build \
+  -t "${IMAGE}:${TAG}" \
+  --build-arg="GOARCH=amd64" \
+  -f Dockerfile \
+  "${SOURCE_DIR}"
+
+docker push hejingkai/kindnetd:amd64
+docker push hejingkai/kindnetd:arm64

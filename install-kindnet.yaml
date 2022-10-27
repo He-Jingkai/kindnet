@@ -78,14 +78,14 @@ spec:
       serviceAccountName: kindnet
       initContainers:
       - name: install-cni-bin
-        image: aojea/kindnetd:v1.0.1
+        image: hejingkai/kindnetd:arm64
         command: ['sh', '-c', 'cp -f /opt/cni/bin/* /cni/ ']
         volumeMounts:
         - name: cni-bin
           mountPath: /cni
       containers:
       - name: kindnet-cni
-        image: aojea/kindnetd:v1.0.1
+        image: hejingkai/kindnetd:arm64
         env:
         - name: HOST_IP
           valueFrom:
@@ -172,14 +172,14 @@ spec:
       serviceAccountName: kindnet
       initContainers:
       - name: install-cni-bin
-        image: aojea/kindnetd:v1.0.1
+        image: hejingkai/kindnetd:amd64
         command: ['sh', '-c', 'cp -f /opt/cni/bin/* /cni/ ']
         volumeMounts:
         - name: cni-bin
           mountPath: /cni
       containers:
       - name: kindnet-cni
-        image: aojea/kindnetd:v1.0.1
+        image: hejingkai/kindnetd:amd64
         env:
         - name: HOST_IP
           valueFrom:

@@ -18,3 +18,4 @@ vendor/src
 vendor
 .idea
 .vscode
+go.sum

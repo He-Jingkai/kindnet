@@ -24,23 +24,16 @@ cd "${REPO_ROOT}"
 # build the binary
 export SOURCE_DIR="${REPO_ROOT}"
 
-# TODO: verisoning
-# build image
-IMAGE="hejingkai/kindnetd"
-TAG="arm64"
-docker build \
-  -t "${IMAGE}:${TAG}" \
-  --build-arg="GOARCH=arm64" \
-  -f Dockerfile \
-  "${SOURCE_DIR}"
+# docker buildx create --use --name kindnet-builder
+# docker buildx inspect kindnet-builder --bootstrap
 
 IMAGE="hejingkai/kindnetd"
-TAG="amd64"
-docker build \
+TAG="2022.11.11"
+docker buildx build \
   -t "${IMAGE}:${TAG}" \
-  --build-arg="GOARCH=amd64" \
+  --platform=linux/arm64,linux/amd64 \
   -f Dockerfile \
-  "${SOURCE_DIR}"
+  "${SOURCE_DIR}" \
+  --push
 
-docker push hejingkai/kindnetd:amd64
-docker push hejingkai/kindnetd:arm64
+docker buildx rm kindnet-builder

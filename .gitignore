@@ -16,3 +16,5 @@
 .gopath~/
 vendor/src
 vendor
+.idea
+.vscode

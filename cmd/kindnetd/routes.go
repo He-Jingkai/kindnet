@@ -18,6 +18,7 @@ package main
 
 import (
 	"net"
+	"os"
 
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
@@ -35,7 +36,13 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		}
 
 		// Check if the route exists to the other node's PodCIDR
-		routeToDst := netlink.Route{Dst: dst, Gw: ip}
+		//routeToDst := netlink.Route{Dst: dst, Gw: ip}
+		routeToDst := netlink.Route{}
+		if IsDPUNode(nodeIP) || IsMyCPU(os.Getenv("HOST_IP"), nodeIP) {
+			routeToDst = netlink.Route{Dst: dst, Gw: ip}
+		} else {
+			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(MyDPUNodeIp(nodeIP))}
+		}
 		route, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {
 			return err

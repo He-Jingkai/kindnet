@@ -198,6 +198,9 @@ spec:
         - name: lib-modules
           mountPath: /lib/modules
           readOnly: true
+        - name: offMesh-config
+          mountPath: /home/offMesh
+          readOnly: true
         resources:
           requests:
             cpu: "100m"
@@ -225,4 +228,7 @@ spec:
       - name: lib-modules
         hostPath:
           path: /lib/modules
+      - name: offMesh-config
+        hostPath:
+          path: /home/offMesh-config
 ---

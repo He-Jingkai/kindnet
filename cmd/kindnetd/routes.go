@@ -38,7 +38,7 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		// Check if the route exists to the other node's PodCIDR
 		//routeToDst := netlink.Route{Dst: dst, Gw: ip}
 		routeToDst := netlink.Route{}
-		if IsDPUNode(nodeIP) || IsMyCPU(os.Getenv("HOST_IP"), nodeIP) {
+		if IsDPUNode(nodeIP) || IsMyCPU(os.Getenv("HOST_IP"), nodeIP) || IsSingleNode(nodeIP) {
 			routeToDst = netlink.Route{Dst: dst, Gw: ip}
 		} else {
 			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(MyDPUNodeIp(nodeIP))}

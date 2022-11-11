@@ -9,9 +9,6 @@ pairs:
     dpuNodeIP: 192.168.50.51  
   - cpuNodeIP: 192.168.50.51
     dpuNodeIP: 192.168.50.51
+singles:
+  - 192.168.50.51
 ```
-
-
-        - name: offMesh-config
-          mountPath: /home/offMesh
-          readOnly: true

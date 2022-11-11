@@ -12,7 +12,8 @@ type PUPair struct {
 }
 
 type ClusterConfig struct {
-	Pairs []PUPair `yaml:"pairs"`
+	Pairs   []PUPair `yaml:"pairs"`
+	Singles []string `yaml:"singles"`
 }
 
 const ClusterConfigYamlPath = `/home/offMesh/cluster-conf.yaml`
@@ -31,6 +32,14 @@ func readClusterConfigYaml(filePath string) ClusterConfig {
 	return clusterConf
 }
 
+func IsSingleNode(nodeIp string) bool {
+	for _, ip := range clusterConfig.Singles {
+		if ip == nodeIp {
+			return true
+		}
+	}
+	return false
+}
 func IsDPUNode(nodeIP string) bool {
 	for _, pair := range clusterConfig.Pairs {
 		if pair.DPUIp == nodeIP {

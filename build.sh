@@ -24,8 +24,8 @@ cd "${REPO_ROOT}"
 # build the binary
 export SOURCE_DIR="${REPO_ROOT}"
 
-# docker buildx create --use --name kindnet-builder
-# docker buildx inspect kindnet-builder --bootstrap
+docker buildx create --use --name kindnet-builder
+docker buildx inspect kindnet-builder --bootstrap
 
 IMAGE="hejingkai/kindnetd"
 TAG="2022.11.11"

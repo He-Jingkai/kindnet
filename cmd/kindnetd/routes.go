@@ -37,11 +37,15 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 
 		// Check if the route exists to the other node's PodCIDR
 		//routeToDst := netlink.Route{Dst: dst, Gw: ip}
+
 		routeToDst := netlink.Route{}
-		if IsDPUNode(nodeIP) || IsMyCPU(os.Getenv("HOST_IP"), nodeIP) || IsSingleNode(nodeIP) {
+		myNodeIP := os.Getenv("HOST_IP")
+		nodeInfo := GetNodeInfo(myNodeIP, nodeIP)
+		klog.Infof("My node's Ip is %v, the node's Ip is %v, nodeInfo is %v", myNodeIP, nodeIP, nodeInfo)
+		if nodeInfo.IsMyCPUNode || nodeInfo.IsDPUNode || nodeInfo.IsSingleNode {
 			routeToDst = netlink.Route{Dst: dst, Gw: ip}
 		} else {
-			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(MyDPUNodeIp(nodeIP))}
+			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeInfo.DPUIp)}
 		}
 		route, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {

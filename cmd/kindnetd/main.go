@@ -155,6 +155,7 @@ func main() {
 	reconcileNodes := makeNodesReconciler(cniConfigWriter, hostIP, ipFamily, clientset)
 
 	clusterConfig = readClusterConfigYaml(ClusterConfigYamlPath)
+	klog.Infof("cluster info from yaml: %v", clusterConfig)
 
 	// main control loop
 	for {

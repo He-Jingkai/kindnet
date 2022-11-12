@@ -16,6 +16,14 @@ type ClusterConfig struct {
 	Singles []string `yaml:"singles"`
 }
 
+type NodeInfo struct {
+	IsSingleNode bool
+	IsCPUNode    bool
+	IsDPUNode    bool
+	IsMyCPUNode  bool
+	DPUIp        string
+}
+
 const ClusterConfigYamlPath = `/home/offMesh/cluster-conf.yaml`
 
 func readClusterConfigYaml(filePath string) ClusterConfig {
@@ -32,41 +40,23 @@ func readClusterConfigYaml(filePath string) ClusterConfig {
 	return clusterConf
 }
 
-func IsSingleNode(nodeIp string) bool {
+func GetNodeInfo(myNodeIP string, nodeIP string) NodeInfo {
 	for _, ip := range clusterConfig.Singles {
-		if ip == nodeIp {
-			return true
+		if ip == nodeIP {
+			return NodeInfo{IsSingleNode: true}
 		}
 	}
-	return false
-}
-func IsDPUNode(nodeIP string) bool {
 	for _, pair := range clusterConfig.Pairs {
 		if pair.DPUIp == nodeIP {
-			return true
+			return NodeInfo{IsDPUNode: true}
 		}
-	}
-	return false
-}
-
-func MyDPUNodeIp(cpuNodeIP string) string {
-	for _, pair := range clusterConfig.Pairs {
-		if pair.CPUIp == cpuNodeIP {
-			return pair.DPUIp
-		}
-	}
-	return ``
-}
-
-func IsMyCPU(myNodeIP string, nodeIP string) bool {
-	for _, pair := range clusterConfig.Pairs {
-		if pair.DPUIp == myNodeIP {
-			if pair.CPUIp == nodeIP {
-				return true
+		if pair.CPUIp == nodeIP {
+			if pair.DPUIp == myNodeIP {
+				return NodeInfo{IsMyCPUNode: true, IsCPUNode: true}
 			} else {
-				return false
+				return NodeInfo{IsCPUNode: true, DPUIp: pair.DPUIp}
 			}
 		}
 	}
-	return false
+	return NodeInfo{}
 }

@@ -28,7 +28,7 @@ docker buildx create --use --name kindnet-builder
 docker buildx inspect kindnet-builder --bootstrap
 
 IMAGE="hejingkai/kindnetd"
-TAG="2022.11.12"
+TAG="2022.11.13"
 docker buildx build \
   -t "${IMAGE}:${TAG}" \
   --platform=linux/arm64,linux/amd64 \

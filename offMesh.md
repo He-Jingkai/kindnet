@@ -1,14 +1,10 @@
 # offMesh patch
 
 ```yaml
-# /home/offMesh/cluster-conf.yaml
+# /home/offMesh-config/cluster-conf.yaml
 pairs:
-  - cpuNodeIP: 192.168.50.51
-    dpuNodeIP: 192.168.50.51
-  - cpuNodeIP: 192.168.50.51
-    dpuNodeIP: 192.168.50.51  
-  - cpuNodeIP: 192.168.50.51
-    dpuNodeIP: 192.168.50.51
+  - cpuNodeIP: 192.168.50.130
+    dpuNodeIP: 192.168.50.131
 singles:
-  - 192.168.50.51
+  - 192.168.50.133
 ```

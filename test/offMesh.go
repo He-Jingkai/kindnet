@@ -25,7 +25,7 @@ type NodeInfo struct {
 	DPUIp        string
 }
 
-const ClusterConfigYamlPath = `/home/offMesh/cluster-conf.yaml`
+const ClusterConfigYamlPath = `./cluster-conf.yaml`
 
 func readClusterConfigYaml(filePath string) ClusterConfig {
 	var clusterConf ClusterConfig
@@ -66,14 +66,14 @@ var clusterConfig ClusterConfig
 
 func main() {
 	clusterConfig = readClusterConfigYaml(ClusterConfigYamlPath)
-	fmt.Printf("cluster info from yaml: %v", clusterConfig)
+	fmt.Printf("cluster info from yaml: %v\n", clusterConfig)
 	node1 := `192.168.50.130`
 	node2 := `192.168.50.131`
 	node3 := `192.168.50.133`
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node1, node2, GetNodeInfo(node1, node2))
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node1, node3, GetNodeInfo(node1, node3))
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node2, node1, GetNodeInfo(node2, node1))
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node2, node3, GetNodeInfo(node2, node3))
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node3, node1, GetNodeInfo(node3, node1))
-	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v", node3, node2, GetNodeInfo(node3, node2))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node1, node2, GetNodeInfo(node1, node2))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node1, node3, GetNodeInfo(node1, node3))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node2, node1, GetNodeInfo(node2, node1))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node2, node3, GetNodeInfo(node2, node3))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node3, node1, GetNodeInfo(node3, node1))
+	fmt.Printf("My Node Ip:%v, the nodeIp is%v, nodeInfo is %v\n", node3, node2, GetNodeInfo(node3, node2))
 }

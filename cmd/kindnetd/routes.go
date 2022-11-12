@@ -44,8 +44,10 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		klog.Infof("My node's Ip is %v, the node's Ip is %v, nodeInfo is %v", myNodeIP, nodeIP, nodeInfo)
 		if nodeInfo.IsMyCPUNode || nodeInfo.IsDPUNode || nodeInfo.IsSingleNode {
 			routeToDst = netlink.Route{Dst: dst, Gw: ip}
+			klog.Infof("direct, %v", routeToDst)
 		} else {
 			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeInfo.DPUIp)}
+			klog.Infof("dpu jump, %v", routeToDst)
 		}
 		route, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {

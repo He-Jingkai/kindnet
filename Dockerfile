@@ -20,6 +20,8 @@ ENV GOPROXY=https://proxy.golang.org
 # copy in sources
 WORKDIR /src
 COPY . .
+RUN go env -w GO111MODULE=on
+RUN go env -w GOPROXY=https://goproxy.cn,direct
 RUN go build -o /go/bin/kindnetd        ./cmd/kindnetd
 RUN go build -o /opt/cni/bin/host-local ./cmd/host-local
 RUN go build -o /opt/cni/bin/ptp        ./cmd/ptp
@@ -28,7 +30,7 @@ RUN go build -o /opt/cni/bin/portmap    ./cmd/portmap
 RUN go build -o /opt/cni/bin/loopback   ./cmd/loopback
 
 # STEP 2: Build small image
-FROM registry.k8s.io/build-image/debian-iptables:bullseye-v1.4.0
+FROM hejingkai/debian-iptables:bullseye-v1.4.0
 COPY --from=builder --chown=root:root /go/bin/kindnetd /bin/kindnetd
 COPY --from=builder --chown=root:root /opt/cni/bin     /opt/cni/bin
 CMD ["/bin/kindnetd"]

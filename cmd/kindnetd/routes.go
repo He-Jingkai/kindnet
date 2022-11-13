@@ -49,13 +49,18 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeInfo.DPUIp)}
 			klog.Infof("dpu jump, %v", routeToDst)
 		}
-		route, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
+		routes, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {
 			return err
 		}
+		for _, route := range routes {
+			err := netlink.RouteDel(&route)
+			if err != nil {
+				return err
+			}
+		}
 
-		// Add route if not present
-		if len(route) == 0 {
+		if len(routes) == 0 {
 			klog.Infof("Adding route %v \n", routeToDst)
 			if err := netlink.RouteAdd(&routeToDst); err != nil {
 				return err

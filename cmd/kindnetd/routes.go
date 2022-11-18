@@ -53,12 +53,6 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		if err != nil {
 			return err
 		}
-		for _, route := range routes {
-			err := netlink.RouteDel(&route)
-			if err != nil {
-				return err
-			}
-		}
 
 		if len(routes) == 0 {
 			klog.Infof("Adding route %v \n", routeToDst)

@@ -7,13 +7,19 @@ import (
 )
 
 type PUPair struct {
-	CPUIp string `yaml:"cpuNodeIP"`
-	DPUIp string `yaml:"dpuNodeIP"`
+	CPUIp   string `yaml:"cpuNodeIP"`
+	DPUIp   string `yaml:"dpuNodeIP"`
+	CPUName string `yaml:"cpuNodeName"`
+	DPUName string `yaml:"dpuNodeName"`
 }
 
+type SinglePU struct {
+	IP   string `yaml:"nodeIP"`
+	Name string `yaml:"nodeName"`
+}
 type ClusterConfig struct {
-	Pairs   []PUPair `yaml:"pairs"`
-	Singles []string `yaml:"singles"`
+	Pairs   []PUPair   `yaml:"pairs"`
+	Singles []SinglePU `yaml:"singles"`
 }
 
 type NodeInfo struct {
@@ -24,7 +30,7 @@ type NodeInfo struct {
 	DPUIp        string
 }
 
-const ClusterConfigYamlPath = `/home/offMesh/cluster-conf.yaml`
+const ClusterConfigYamlPath = `/etc/offmesh/cluster-conf.yaml`
 
 func readClusterConfigYaml(filePath string) ClusterConfig {
 	var clusterConf ClusterConfig
@@ -41,8 +47,8 @@ func readClusterConfigYaml(filePath string) ClusterConfig {
 }
 
 func GetNodeInfo(myNodeIP string, nodeIP string) NodeInfo {
-	for _, ip := range clusterConfig.Singles {
-		if ip == nodeIP {
+	for _, single := range clusterConfig.Singles {
+		if single.IP == nodeIP {
 			return NodeInfo{IsSingleNode: true}
 		}
 	}

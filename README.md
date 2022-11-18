@@ -5,6 +5,9 @@
 pairs:
   - cpuNodeIP: 192.168.50.130
     dpuNodeIP: 192.168.50.131
+    cpuNodeName: master
+    dpuNodeName: master-dpu
 singles:
-  - 192.168.50.133
+  - nodeIP: 192.168.50.133
+    nodeName: worker1
 ```

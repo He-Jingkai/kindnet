@@ -91,8 +91,8 @@ spec:
             - name: lib-modules
               mountPath: /lib/modules
               readOnly: true
-            - name: offmesh-config
-              mountPath: /home/offMesh
+            - name: offmesh-conf
+              mountPath: /etc/offmesh
               readOnly: true
           resources:
             requests:
@@ -121,7 +121,7 @@ spec:
         - name: lib-modules
           hostPath:
             path: /lib/modules
-        - name: offmesh-config
-          hostPath:
-            path: /home/offMesh-config
+        - name: offmesh-conf
+          configMap:
+              name: offmesh-conf
 ---

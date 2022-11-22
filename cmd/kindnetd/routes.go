@@ -18,6 +18,7 @@ package main
 
 import (
 	"net"
+	"os"
 
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
@@ -47,10 +48,10 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(myNodeInfo.PairNodeIP)}
 		} else if myNodeInfo.NodeType == DPUNode {
 			targetNodeInfo := GetNodeInfo(nodeIP)
-			if targetNodeInfo.NodeType == CPUNode {
+			if (targetNodeInfo.NodeType == CPUNode && targetNodeInfo.PairNodeIP == os.Getenv("HOST_IP")) || targetNodeInfo.NodeType == DPUNode {
+				routeToDst = netlink.Route{Dst: dst, Gw: ip}
+			} else if targetNodeInfo.NodeType == CPUNode {
 				routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(targetNodeInfo.PairNodeIP)}
-			} else if targetNodeInfo.NodeType == DPUNode {
-				routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeIP)}
 			}
 		}
 

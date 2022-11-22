@@ -58,6 +58,7 @@ const (
 )
 
 var clusterConfig ClusterConfig
+var myNodeInfo NodeInfo
 
 func main() {
 	// enable logging
@@ -156,6 +157,8 @@ func main() {
 
 	clusterConfig = readClusterConfigYaml(ClusterConfigYamlPath)
 	klog.Infof("cluster info from yaml: %v", clusterConfig)
+	myNodeInfo = GetNodeInfo(os.Getenv("HOST_IP"))
+	klog.Infof("my node info: %v", myNodeInfo)
 
 	// main control loop
 	for {

@@ -22,12 +22,15 @@ type ClusterConfig struct {
 	Singles []SinglePU `yaml:"singles"`
 }
 
+const (
+	NotFound = 0
+	DPUNode  = 1
+	CPUNode  = 2
+)
+
 type NodeInfo struct {
-	IsSingleNode bool
-	IsCPUNode    bool
-	IsDPUNode    bool
-	IsMyCPUNode  bool
-	DPUIp        string
+	NodeType   int
+	PairNodeIP string
 }
 
 const ClusterConfigYamlPath = `/etc/offmesh/cluster-conf.yaml`
@@ -46,22 +49,13 @@ func readClusterConfigYaml(filePath string) ClusterConfig {
 	return clusterConf
 }
 
-func GetNodeInfo(myNodeIP string, nodeIP string) NodeInfo {
-	for _, single := range clusterConfig.Singles {
-		if single.IP == nodeIP {
-			return NodeInfo{IsSingleNode: true}
-		}
-	}
+func GetNodeInfo(nodeIP string) NodeInfo {
 	for _, pair := range clusterConfig.Pairs {
 		if pair.DPUIp == nodeIP {
-			return NodeInfo{IsDPUNode: true}
+			return NodeInfo{NodeType: DPUNode, PairNodeIP: pair.CPUIp}
 		}
 		if pair.CPUIp == nodeIP {
-			if pair.DPUIp == myNodeIP {
-				return NodeInfo{IsMyCPUNode: true, IsCPUNode: true}
-			} else {
-				return NodeInfo{IsCPUNode: true, DPUIp: pair.DPUIp}
-			}
+			return NodeInfo{NodeType: CPUNode, PairNodeIP: pair.DPUIp}
 		}
 	}
 	return NodeInfo{}

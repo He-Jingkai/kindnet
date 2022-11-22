@@ -27,8 +27,9 @@ export SOURCE_DIR="${REPO_ROOT}"
 docker buildx create --use --name kindnet-builder
 docker buildx inspect kindnet-builder --bootstrap
 
-IMAGE="hejingkai/kindnetd"
-TAG="1.0.104"
+#IMAGE="hejingkai/kindnetd"
+IMAGE="registry.cn-hangzhou.aliyuncs.com/jkhe"
+TAG="1.0.106"
 docker buildx build \
   -t "${IMAGE}:${TAG}" \
   --platform=linux/arm64,linux/amd64 \

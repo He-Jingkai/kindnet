@@ -18,13 +18,18 @@ package main
 
 import (
 	"net"
-	"os"
 
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
 	"k8s.io/klog/v2"
 )
 
+// If this node
+//
+//		is CPU node: all traffic from this node routes to its own DPU
+//	 is DPU node: if the target node
+//			is CPU node: all traffic to the target node routes to its own DPU
+//			is DPU node: all traffic to the target node routes to itself IP
 func syncRoute(nodeIP string, podCIDRs []string) error {
 	ip := net.ParseIP(nodeIP)
 
@@ -36,19 +41,19 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		}
 
 		// Check if the route exists to the other node's PodCIDR
-		//routeToDst := netlink.Route{Dst: dst, Gw: ip}
-
 		routeToDst := netlink.Route{}
-		myNodeIP := os.Getenv("HOST_IP")
-		nodeInfo := GetNodeInfo(myNodeIP, nodeIP)
-		klog.Infof("My node's Ip is %v, the node's Ip is %v, nodeInfo is %v", myNodeIP, nodeIP, nodeInfo)
-		if nodeInfo.IsMyCPUNode || nodeInfo.IsDPUNode || nodeInfo.IsSingleNode {
-			routeToDst = netlink.Route{Dst: dst, Gw: ip}
-			klog.Infof("direct, %v", routeToDst)
-		} else {
-			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeInfo.DPUIp)}
-			klog.Infof("dpu jump, %v", routeToDst)
+
+		if myNodeInfo.NodeType == CPUNode {
+			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(myNodeInfo.PairNodeIP)}
+		} else if myNodeInfo.NodeType == DPUNode {
+			targetNodeInfo := GetNodeInfo(nodeIP)
+			if targetNodeInfo.NodeType == CPUNode {
+				routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(targetNodeInfo.PairNodeIP)}
+			} else if targetNodeInfo.NodeType == DPUNode {
+				routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(nodeIP)}
+			}
 		}
+
 		routes, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {
 			return err

@@ -65,14 +65,14 @@ spec:
       serviceAccountName: kindnet
       initContainers:
         - name: install-cni-bin
-          image: registry.cn-hangzhou.aliyuncs.com/jkhe/kindnetd:1.0.108
+          image: registry.cn-hangzhou.aliyuncs.com/jkhe/kindnetd:1.0.109
           command: ['sh', '-c', 'cp -f /opt/cni/bin/* /cni/ ']
           volumeMounts:
             - name: cni-bin
               mountPath: /cni
       containers:
         - name: kindnet-cni
-          image: registry.cn-hangzhou.aliyuncs.com/jkhe/kindnetd:1.0.108
+          image: registry.cn-hangzhou.aliyuncs.com/jkhe/kindnetd:1.0.109
           env:
             - name: HOST_IP
               valueFrom:

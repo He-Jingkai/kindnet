@@ -30,7 +30,7 @@ RUN go build -o /opt/cni/bin/portmap    ./cmd/portmap
 RUN go build -o /opt/cni/bin/loopback   ./cmd/loopback
 
 # STEP 2: Build small image
-FROM hejingkai/debian-iptables:bullseye-v1.4.0
+FROM gcr.io/istio-release/iptables@sha256:64ba191166d2c3f87815148cc1a9f530b770e0dfe81acb164ab79cbb31da582c
 COPY --from=builder --chown=root:root /go/bin/kindnetd /bin/kindnetd
 COPY --from=builder --chown=root:root /opt/cni/bin     /opt/cni/bin
 CMD ["/bin/kindnetd"]

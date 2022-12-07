@@ -57,9 +57,6 @@ const (
 	DualStackFamily IPFamily = "dualstack"
 )
 
-var clusterConfig ClusterConfig
-var myNodeInfo NodeInfo
-
 func main() {
 	// enable logging
 	klog.InitFlags(nil)
@@ -154,11 +151,6 @@ func main() {
 
 	// setup nodes reconcile function, closes over arguments
 	reconcileNodes := makeNodesReconciler(cniConfigWriter, hostIP, ipFamily, clientset)
-
-	clusterConfig = readClusterConfigYaml(ClusterConfigYamlPath)
-	klog.Infof("cluster info from yaml: %v", clusterConfig)
-	myNodeInfo = GetNodeInfo(os.Getenv("HOST_IP"))
-	klog.Infof("my node info: %v", myNodeInfo)
 
 	// main control loop
 	for {

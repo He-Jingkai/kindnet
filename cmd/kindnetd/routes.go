@@ -18,19 +18,12 @@ package main
 
 import (
 	"net"
-	"os"
 
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
 	"k8s.io/klog/v2"
 )
 
-// If this node
-//
-//		is CPU node: all traffic from this node routes to its own DPU
-//	 is DPU node: if the target node
-//			is CPU node: all traffic to the target node routes to its own DPU
-//			is DPU node: all traffic to the target node routes to itself IP
 func syncRoute(nodeIP string, podCIDRs []string) error {
 	ip := net.ParseIP(nodeIP)
 
@@ -42,25 +35,14 @@ func syncRoute(nodeIP string, podCIDRs []string) error {
 		}
 
 		// Check if the route exists to the other node's PodCIDR
-		routeToDst := netlink.Route{}
-
-		if myNodeInfo.NodeType == CPUNode {
-			routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(myNodeInfo.PairNodeIP)}
-		} else if myNodeInfo.NodeType == DPUNode {
-			targetNodeInfo := GetNodeInfo(nodeIP)
-			if (targetNodeInfo.NodeType == CPUNode && targetNodeInfo.PairNodeIP == os.Getenv("HOST_IP")) || targetNodeInfo.NodeType == DPUNode {
-				routeToDst = netlink.Route{Dst: dst, Gw: ip}
-			} else if targetNodeInfo.NodeType == CPUNode {
-				routeToDst = netlink.Route{Dst: dst, Gw: net.ParseIP(targetNodeInfo.PairNodeIP)}
-			}
-		}
-
-		routes, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
+		routeToDst := netlink.Route{Dst: dst, Gw: ip}
+		route, err := netlink.RouteListFiltered(nl.GetIPFamily(ip), &routeToDst, netlink.RT_FILTER_DST)
 		if err != nil {
 			return err
 		}
 
-		if len(routes) == 0 {
+		// Add route if not present
+		if len(route) == 0 {
 			klog.Infof("Adding route %v \n", routeToDst)
 			if err := netlink.RouteAdd(&routeToDst); err != nil {
 				return err

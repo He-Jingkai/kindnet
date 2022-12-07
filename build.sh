@@ -29,7 +29,7 @@ docker buildx inspect kindnet-builder --bootstrap
 
 #IMAGE="hejingkai/kindnetd"
 IMAGE="registry.cn-hangzhou.aliyuncs.com/jkhe/kindnetd"
-TAG="1.0.109"
+TAG="1.0.1-ori"
 docker buildx build \
   -t "${IMAGE}:${TAG}" \
   --platform=linux/arm64,linux/amd64 \

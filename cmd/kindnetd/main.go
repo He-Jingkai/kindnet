@@ -218,6 +218,12 @@ func makeNodesReconciler(cniConfig *CNIConfigWriter, hostIP string, ipFamily IPF
 		if nodeIPs.Has(hostIP) {
 			klog.Info("handling current node\n")
 			// compute the current cni config inputs
+
+			err := CheckLocalIpOIb(&node)
+			if err != nil {
+				return err
+			}
+
 			if err := cniConfig.Write(
 				ComputeCNIConfigInputs(node),
 			); err != nil {
@@ -240,25 +246,12 @@ func makeNodesReconciler(cniConfig *CNIConfigWriter, hostIP string, ipFamily IPF
 			return nil
 		}
 		klog.Infof("Node %v has CIDR %s \n", node.Name, podCIDRs)
-		podCIDRsv4, podCIDRsv6 := splitCIDRs(podCIDRs)
+		podCIDRsv4, _ := splitCIDRs(podCIDRs)
 
-		// obtain the PodCIDR gateway
-		var nodeIPv4, nodeIPv6 string
-		for _, ip := range nodeIPs.List() {
-			if isIPv6String(ip) {
-				nodeIPv6 = ip
-			} else {
-				nodeIPv4 = ip
-			}
-		}
+		nodeIPv4 := GetNodeIpOIbAddr(&node)
 
 		if nodeIPv4 != "" && len(podCIDRsv4) > 0 {
 			if err := syncRoute(nodeIPv4, podCIDRsv4); err != nil {
-				return err
-			}
-		}
-		if nodeIPv6 != "" && len(podCIDRsv6) > 0 {
-			if err := syncRoute(nodeIPv6, podCIDRsv6); err != nil {
 				return err
 			}
 		}

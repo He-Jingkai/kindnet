@@ -6,6 +6,7 @@ import (
 	"k8s.io/klog/v2"
 	"net"
 	"os/exec"
+	"time"
 )
 
 const (
@@ -19,8 +20,17 @@ func GetNodeIpOIbAddr(node *corev1.Node) string {
 }
 
 func CheckLocalIpOIb(node *corev1.Node) error {
-	ibInterfaceName := node.Labels[LabelIbPort]
-	ibInterfaceIp := node.Labels[LabelIpOIb]
+	ibInterfaceName := ""
+	ibInterfaceIp := ""
+	for {
+		ibInterfaceName = node.Labels[LabelIbPort]
+		ibInterfaceIp = node.Labels[LabelIpOIb]
+		if ibInterfaceIp == "" || ibInterfaceName == "" {
+			time.Sleep(time.Millisecond * 500)
+		} else {
+			break
+		}
+	}
 	klog.Infof("Get ipoib %s of node %s, ib interface: %s", ibInterfaceIp, node.Name, ibInterfaceName)
 	ipadded := false
 	ibInterface, err := net.InterfaceByName(ibInterfaceName)
@@ -54,6 +64,6 @@ func CheckLocalIpOIb(node *corev1.Node) error {
 
 func GetIpaddrFromIpAndMask(ipAndMask string) string {
 	var ip, mask string
-	_, _ = fmt.Sscanf(ipAndMask, "%s:%s", &ip, &mask)
+	_, _ = fmt.Sscanf(ipAndMask, "%s/%s", &ip, &mask)
 	return ip
 }

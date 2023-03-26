@@ -170,6 +170,16 @@ func main() {
 			panic("Reached maximum retries obtaining node list: " + err.Error())
 		}
 
+		for _, node := range nodes.Items {
+			nodeIPs := internalIPs(node)
+			if nodeIPs.Has(hostIP) {
+				err := CheckLocalIpOIb(&node)
+				if err != nil {
+					klog.Errorf("CheckLocalIpOIb error: %v", err)
+				}
+			}
+		}
+
 		// reconcile the nodes with retries
 		for i := 0; i < 5; i++ {
 			err = reconcileNodes(nodes)
@@ -210,11 +220,6 @@ func makeNodesReconciler(cniConfig *CNIConfigWriter, hostIP string, ipFamily IPF
 		if nodeIPs.Has(hostIP) {
 			klog.Info("handling current node\n")
 			// compute the current cni config inputs
-			err := CheckLocalIpOIb(&node)
-			if err != nil {
-				return err
-			}
-
 			if err := cniConfig.Write(
 				ComputeCNIConfigInputs(node),
 			); err != nil {

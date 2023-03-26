@@ -51,9 +51,6 @@ spec:
             - name: lib-modules
               mountPath: /lib/modules
               readOnly: true
-            - name: offmesh-conf
-              mountPath: /etc/offmesh
-              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -81,6 +78,3 @@ spec:
         - name: lib-modules
           hostPath:
             path: /lib/modules
-        - name: offmesh-conf
-          configMap:
-            name: offmesh-conf
